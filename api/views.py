@@ -257,12 +257,25 @@ def check_plate(request, plate):
         # Get accidents (last 10)
         accidents = []
         for accident in vehicle.accidents.order_by('-date')[:10]:
+            # Get damaged parts for this accident
+            damaged_parts = []
+            for part in accident.damaged_parts.all():
+                part_data = {
+                    'part_id': part.part_id,
+                    'name': part.name,
+                    'category': part.category,
+                    'description': part.description
+                }
+                damaged_parts.append(part_data)
+            
             accident_data = {
+                'accident_id': accident.accident_id,
                 'date': accident.date,
                 'severity': accident.severity,
                 'location': accident.location,
                 'description': accident.description,
-                'fault_party': accident.fault_party
+                'fault_party': accident.fault_party,
+                'damaged_parts': damaged_parts
             }
             accidents.append(accident_data)
         
