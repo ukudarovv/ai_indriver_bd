@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: django_car_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - sqlite_data:/app
+    command: >
+      sh -c "python manage.py migrate &&
+             python load_data.py &&
+             python manage.py runserver 0.0.0.0:8000"
+
+volumes:
+  sqlite_data:
