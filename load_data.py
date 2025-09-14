@@ -11,7 +11,7 @@ if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'car_registry.settings')
     django.setup()
     
-    from api.models import Owner, DriverLicense, Vehicle, Plate, Insurer, InsurancePolicy, Accident
+    from api.models import Owner, DriverLicense, Vehicle, Plate, Insurer, InsurancePolicy, Accident, CarPart
     from datetime import date, timedelta
     import random
     import string
@@ -26,6 +26,7 @@ if __name__ == '__main__':
     DriverLicense.objects.all().delete()
     Owner.objects.all().delete()
     Insurer.objects.all().delete()
+    CarPart.objects.all().delete()
     
     # Создаем страховые компании
     insurers = [
@@ -33,6 +34,59 @@ if __name__ == '__main__':
         Insurer.objects.create(name='Nomad Insurance'),
         Insurer.objects.create(name='Eurasia Insurance'),
     ]
+    
+    # Создаем детали автомобиля
+    car_parts_data = [
+        # Кузов
+        ('Передний бампер', 'Кузов', 'Передняя часть автомобиля'),
+        ('Задний бампер', 'Кузов', 'Задняя часть автомобиля'),
+        ('Капот', 'Кузов', 'Передняя крышка двигателя'),
+        ('Крышка багажника', 'Кузов', 'Задняя крышка багажника'),
+        ('Левая дверь', 'Кузов', 'Левая передняя дверь'),
+        ('Правая дверь', 'Кузов', 'Правая передняя дверь'),
+        ('Левая задняя дверь', 'Кузов', 'Левая задняя дверь'),
+        ('Правая задняя дверь', 'Кузов', 'Правая задняя дверь'),
+        ('Левое крыло', 'Кузов', 'Левое переднее крыло'),
+        ('Правое крыло', 'Кузов', 'Правое переднее крыло'),
+        ('Левое заднее крыло', 'Кузов', 'Левое заднее крыло'),
+        ('Правое заднее крыло', 'Кузов', 'Правое заднее крыло'),
+        ('Крыша', 'Кузов', 'Верхняя часть автомобиля'),
+        
+        # Стекло
+        ('Лобовое стекло', 'Стекло', 'Переднее стекло'),
+        ('Заднее стекло', 'Стекло', 'Заднее стекло'),
+        ('Левое боковое стекло', 'Стекло', 'Левое переднее стекло'),
+        ('Правое боковое стекло', 'Стекло', 'Правое переднее стекло'),
+        ('Левое заднее стекло', 'Стекло', 'Левое заднее стекло'),
+        ('Правое заднее стекло', 'Стекло', 'Правое заднее стекло'),
+        
+        # Фары
+        ('Левая фара', 'Освещение', 'Левая передняя фара'),
+        ('Правая фара', 'Освещение', 'Правая передняя фара'),
+        ('Левый задний фонарь', 'Освещение', 'Левый задний фонарь'),
+        ('Правый задний фонарь', 'Освещение', 'Правый задний фонарь'),
+        ('Левый поворотник', 'Освещение', 'Левый указатель поворота'),
+        ('Правый поворотник', 'Освещение', 'Правый указатель поворота'),
+        
+        # Колеса
+        ('Левое переднее колесо', 'Колеса', 'Левое переднее колесо'),
+        ('Правое переднее колесо', 'Колеса', 'Правое переднее колесо'),
+        ('Левое заднее колесо', 'Колеса', 'Левое заднее колесо'),
+        ('Правое заднее колесо', 'Колеса', 'Правое заднее колесо'),
+        
+        # Зеркала
+        ('Левое зеркало', 'Зеркала', 'Левое боковое зеркало'),
+        ('Правое зеркало', 'Зеркала', 'Правое боковое зеркало'),
+    ]
+    
+    car_parts = []
+    for name, category, description in car_parts_data:
+        part = CarPart.objects.create(
+            name=name,
+            category=category,
+            description=description
+        )
+        car_parts.append(part)
     
     # Создаем владельцев и их данные
     owners = []
@@ -114,7 +168,7 @@ if __name__ == '__main__':
         
         # Создаем аварии (не для всех)
         if random.random() < 0.2:
-            Accident.objects.create(
+            accident = Accident.objects.create(
                 vehicle=vehicle,
                 date=date.today() - timedelta(days=random.randint(10, 800)),
                 severity=random.choice(['minor', 'moderate', 'severe']),
@@ -122,6 +176,11 @@ if __name__ == '__main__':
                 description='Имитация ДТП',
                 fault_party=random.choice(['owner', 'other', 'unknown'])
             )
+            
+            # Добавляем случайные поврежденные детали
+            num_damaged_parts = random.randint(1, 5)  # От 1 до 5 поврежденных деталей
+            damaged_parts = random.sample(car_parts, min(num_damaged_parts, len(car_parts)))
+            accident.damaged_parts.set(damaged_parts)
     
     print(f"Создано:")
     print(f"- {Owner.objects.count()} владельцев")
@@ -130,5 +189,6 @@ if __name__ == '__main__':
     print(f"- {Plate.objects.count()} номерных знаков")
     print(f"- {Insurer.objects.count()} страховых компаний")
     print(f"- {InsurancePolicy.objects.count()} страховых полисов")
+    print(f"- {CarPart.objects.count()} деталей автомобиля")
     print(f"- {Accident.objects.count()} аварий")
     print("Тестовые данные успешно загружены!")

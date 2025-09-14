@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Owner, DriverLicense, Vehicle, Plate, Insurer, InsurancePolicy, Accident
+from .models import Owner, DriverLicense, Vehicle, Plate, Insurer, InsurancePolicy, Accident, CarPart
 
 
 class OwnerSerializer(serializers.ModelSerializer):
@@ -40,10 +40,18 @@ class InsurancePolicySerializer(serializers.ModelSerializer):
         fields = ['policy_id', 'policy_number', 'type', 'insurer_name', 'valid_from', 'valid_to', 'status']
 
 
+class CarPartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarPart
+        fields = ['part_id', 'name', 'category', 'description']
+
+
 class AccidentSerializer(serializers.ModelSerializer):
+    damaged_parts = CarPartSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Accident
-        fields = ['accident_id', 'date', 'severity', 'location', 'description', 'fault_party']
+        fields = ['accident_id', 'date', 'severity', 'location', 'description', 'fault_party', 'damaged_parts']
 
 
 class VehicleDetailSerializer(serializers.ModelSerializer):

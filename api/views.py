@@ -152,11 +152,26 @@ def list_plates(request):
                     ],
                     'accidents': [
                         {
+                            'accident_id': 1,
                             'date': '2024-05-10',
                             'severity': 'minor',
                             'location': 'Алматы',
                             'description': 'Столкновение на парковке',
-                            'fault_party': 'other'
+                            'fault_party': 'other',
+                            'damaged_parts': [
+                                {
+                                    'part_id': 1,
+                                    'name': 'Передний бампер',
+                                    'category': 'Кузов',
+                                    'description': 'Передняя часть автомобиля'
+                                },
+                                {
+                                    'part_id': 2,
+                                    'name': 'Правое крыло',
+                                    'category': 'Кузов',
+                                    'description': 'Правое переднее крыло'
+                                }
+                            ]
                         }
                     ]
                 }

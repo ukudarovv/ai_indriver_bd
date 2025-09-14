@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Owner, DriverLicense, Vehicle, Plate, Insurer, InsurancePolicy, Accident
+from .models import Owner, DriverLicense, Vehicle, Plate, Insurer, InsurancePolicy, Accident, CarPart
 
 
 @admin.register(Owner)
@@ -42,8 +42,16 @@ class InsurancePolicyAdmin(admin.ModelAdmin):
     search_fields = ['policy_number', 'vehicle__vin']
 
 
+@admin.register(CarPart)
+class CarPartAdmin(admin.ModelAdmin):
+    list_display = ['part_id', 'name', 'category', 'description']
+    list_filter = ['category']
+    search_fields = ['name', 'category', 'description']
+
+
 @admin.register(Accident)
 class AccidentAdmin(admin.ModelAdmin):
     list_display = ['accident_id', 'vehicle', 'date', 'severity', 'location', 'fault_party']
     list_filter = ['severity', 'fault_party', 'date']
     search_fields = ['vehicle__vin', 'location', 'description']
+    filter_horizontal = ['damaged_parts']

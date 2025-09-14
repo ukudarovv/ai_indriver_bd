@@ -118,6 +118,21 @@ class InsurancePolicy(models.Model):
         return f"{self.policy_number} ({self.type})"
 
 
+class CarPart(models.Model):
+    """Модель для деталей автомобиля"""
+    part_id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=100, unique=True, help_text="Название детали")
+    category = models.CharField(max_length=50, help_text="Категория детали")
+    description = models.TextField(null=True, blank=True, help_text="Описание детали")
+
+    class Meta:
+        db_table = 'car_parts'
+        ordering = ['category', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.category})"
+
+
 class Accident(models.Model):
     FAULT_CHOICES = [
         ('owner', 'Owner'),
@@ -138,6 +153,7 @@ class Accident(models.Model):
     location = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     fault_party = models.CharField(max_length=10, choices=FAULT_CHOICES, default='unknown')
+    damaged_parts = models.ManyToManyField(CarPart, blank=True, related_name='accidents', help_text="Поврежденные детали")
 
     class Meta:
         db_table = 'accidents'
